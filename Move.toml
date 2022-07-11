@@ -1,0 +1,10 @@
+[package]
+name = "space_powder_marketplace"
+version = "0.1.0"
+
+[addresses]
+AptosFramework = "0x1"
+SpacePowderMarketplace = "0xa9ea562f82bbfd8d96eba3a1eb4e609f60ff2c99d43c37dd4c892cc4d144d4b"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "devnet" }

@@ -4,7 +4,7 @@ version = "0.1.0"
 
 [addresses]
 AptosFramework = "0x1"
-SpacePowderMarketplace = "0x931c9ed97ad833da1f543da35459c508fdd4d429e13cd146fff4c7a9b545dfca"
+SpacePowderMarketplace = "069f2cbcf3934c8b6b0ff79f10b5db1e12cedfb932f2c74cf365e26ccbe52dc3"
 
 [dependencies]
 AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "devnet" }

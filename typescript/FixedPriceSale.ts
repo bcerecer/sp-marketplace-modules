@@ -53,8 +53,7 @@ export class SpacePowderClient {
       type_arguments: any[];
     } = {
       type: "script_function_payload",
-      function:
-        "0x69f2cbcf3934c8b6b0ff79f10b5db1e12cedfb932f2c74cf365e26ccbe52dc3::FixedPriceSale::list_token",
+      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::list_token`,
       type_arguments: [],
       arguments: [
         collectionOwnerAddress,
@@ -197,6 +196,8 @@ async function main() {
   console.log(`Bob's token balance: ${token_balance}`);
   assert(token_balance == 0);
 
+  console.log("\n=== Alice Lists Token ===");
+
   const tokenPrice = 100;
   await spacePowderClient.listTokenWrapper(
     alice,
@@ -213,6 +214,42 @@ async function main() {
     token_name
   );
   console.log(`\nAlice's token balance: ${token_balance}`);
+  assert(token_balance == 0);
+
+  token_balance = await tokenClient.getTokenBalance(
+    bob.address(),
+    alice.address(),
+    collection_name,
+    token_name
+  );
+  console.log(`\Bob's token balance: ${token_balance}`);
+  assert(token_balance == 0);
+
+  console.log("\n=== Bob Buys Token ===");
+
+  await spacePowderClient.buyTokenWrapper(
+    bob,
+    alice.address(),
+    alice.address(),
+    collection_name,
+    token_name
+  );
+
+  token_balance = await tokenClient.getTokenBalance(
+    bob.address(),
+    alice.address(),
+    collection_name,
+    token_name
+  );
+  console.log(`\Bob's token balance: ${token_balance}`);
+  assert(token_balance == 1);
+  token_balance = await tokenClient.getTokenBalance(
+    alice.address(),
+    alice.address(),
+    collection_name,
+    token_name
+  );
+  console.log(`\Alice's token balance: ${token_balance}`);
   assert(token_balance == 0);
 }
 

@@ -198,8 +198,14 @@ module SpacePowderMarketplace::FixedPriceSale {
         let token_id = Token::create_token_id_raw(collection_creator_addr, collection_name, token_name);
         let token_price = 100;
         list_token(&seller, collection_creator_addr, collection_name, token_name, token_price);
+        {
+            // Verify listed_items(escrow) entry was created
+            let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
+            let listed_items = &mut listedItemsData.listed_items;
+            assert!(Table::length(listed_items) == 1, E_INCORRECT_TOKEN_OWNER);
             // Verify seller doesn't own the token(NFT) anymore
             assert!(Token::balance_of(seller_addr, token_id) == 0, E_INCORRECT_TOKEN_OWNER);
+        };
 
         // Create and fund faucet        
         let coin_mint_amount = 1000;
@@ -239,8 +245,14 @@ module SpacePowderMarketplace::FixedPriceSale {
         let token_id = Token::create_token_id_raw(collection_creator_addr, collection_name, token_name);
         let token_price = 100;
         list_token(&seller, collection_creator_addr, collection_name, token_name, token_price);
+        {
+            // Verify listed_items(escrow) entry was created
+            let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
+            let listed_items = &mut listedItemsData.listed_items;
+            assert!(Table::length(listed_items) == 1, E_INCORRECT_TOKEN_OWNER);
             // Verify seller doesn't own the token(NFT) anymore
             assert!(Token::balance_of(seller_addr, token_id) == 0, E_INCORRECT_TOKEN_OWNER);
+        };
 
         // Create and fund faucet        
         let coin_mint_amount = 1000;
@@ -252,8 +264,14 @@ module SpacePowderMarketplace::FixedPriceSale {
         let deficit_from_token_price = 10;
         let insufficient_funds = token_price - deficit_from_token_price;
         Coin::transfer<TestCoin>(&faucet, buyer_addr, insufficient_funds);
+        {
+            // Verify listed_items(escrow) entry still has token(NFT)
+            let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
+            let listed_items = &mut listedItemsData.listed_items;
+            assert!(Table::length(listed_items) == 1, E_INCORRECT_TOKEN_OWNER);
             // Verify buyer insuffice_funds amount of coins
             assert!(Coin::balance<TestCoin>(buyer_addr) == insufficient_funds, E_INVALID_BALANCE);
+        };
         
         buy_token(&buyer, seller_addr, collection_creator_addr, collection_name, token_name);
             // Verify buyer owns token(NFT) and seller has the coins
@@ -278,13 +296,26 @@ module SpacePowderMarketplace::FixedPriceSale {
         let collection_creator_addr = Signer::address_of(&collection_creator);
         let token_id = Token::create_token_id_raw(collection_creator_addr, collection_name, token_name);
         let token_price = 100;
-        list_token(&seller, collection_creator_addr, collection_name, token_name, token_price);
+        list_token(&seller, collection_creator_addr, collection_name, token_name, token_price);            
+        {
+            // Verify listed_items(escrow) entry was created
+            let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
+            let listed_items = &mut listedItemsData.listed_items;
+            assert!(Table::length(listed_items) == 1, E_INCORRECT_TOKEN_OWNER);
             // Verify seller doesn't own the token(NFT) anymore
             assert!(Token::balance_of(seller_addr, token_id) == 0, E_INCORRECT_TOKEN_OWNER);
+        };
 
         // Unlist listed token(NFT)
         unlist_token(&seller, collection_creator_addr, collection_name, token_name);
-            // Verify seller owns the token(NFT) anymore
+        {
+            // Verify listed_items(escrow) entry was removed
+            let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
+            let listed_items = &mut listedItemsData.listed_items;
+            assert!(Table::length(listed_items) == 0, E_INCORRECT_TOKEN_OWNER);
+            // Verify seller owns the token(NFT) anymore 
             assert!(Token::balance_of(seller_addr, token_id) == 1, E_INCORRECT_TOKEN_OWNER);
+            assert!(Token::balance_of(seller_addr, token_id) == 1, E_INCORRECT_TOKEN_OWNER);
+        };
     }
 }

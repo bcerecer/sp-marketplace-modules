@@ -127,7 +127,7 @@ async function main() {
   const alice = new Account();
   const bob = new Account();
   const collection_name = "Alice's";
-  const token_name = "Alice's first token";
+  const first_token_name = "Alice's first token";
 
   console.log("\n=== Addresses ===");
   console.log(
@@ -172,8 +172,8 @@ async function main() {
   await tokenClient.createToken(
     alice,
     collection_name,
-    token_name,
-    "Alice's simple token",
+    first_token_name,
+    "Alice's any description",
     1,
     "https://aptos.dev/img/nyan.jpeg"
   );
@@ -182,7 +182,7 @@ async function main() {
     alice.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
   console.log(`\nAlice's token balance: ${token_balance}`);
   assert(token_balance == 1);
@@ -191,7 +191,7 @@ async function main() {
     bob.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
   console.log(`Bob's token balance: ${token_balance}`);
   assert(token_balance == 0);
@@ -203,7 +203,7 @@ async function main() {
     alice,
     alice.address(),
     collection_name,
-    token_name,
+    first_token_name,
     tokenPrice
   );
 
@@ -211,7 +211,7 @@ async function main() {
     alice.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
   console.log(`\nAlice's token balance: ${token_balance}`);
   assert(token_balance == 0);
@@ -220,7 +220,7 @@ async function main() {
     bob.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
   console.log(`\Bob's token balance: ${token_balance}`);
   assert(token_balance == 0);
@@ -232,25 +232,81 @@ async function main() {
     alice.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
 
   token_balance = await tokenClient.getTokenBalance(
     bob.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
-  console.log(`\Bob's token balance: ${token_balance}`);
+  console.log(`\nBob's token balance: ${token_balance}`);
   assert(token_balance == 1);
   token_balance = await tokenClient.getTokenBalance(
     alice.address(),
     alice.address(),
     collection_name,
-    token_name
+    first_token_name
   );
   console.log(`\Alice's token balance: ${token_balance}`);
   assert(token_balance == 0);
+
+  console.log("\n=== Alice Creates Second Token ===");
+  const second_token_name = "Alice's second token";
+  await tokenClient.createToken(
+    alice,
+    collection_name,
+    second_token_name,
+    "Alice's any description",
+    1,
+    "https://aptos.dev/img/nyan.jpeg"
+  );
+  token_balance = await tokenClient.getTokenBalance(
+    alice.address(),
+    alice.address(),
+    collection_name,
+    second_token_name
+  );
+  console.log(`\nAlice's token balance: ${token_balance}`);
+  assert(token_balance == 1);
+
+  console.log("\n=== Alice Lists Token ===");
+
+  await spacePowderClient.listTokenWrapper(
+    alice,
+    alice.address(),
+    collection_name,
+    second_token_name,
+    tokenPrice
+  );
+
+  token_balance = await tokenClient.getTokenBalance(
+    alice.address(),
+    alice.address(),
+    collection_name,
+    second_token_name
+  );
+  console.log(`\nAlice's token balance: ${token_balance}`);
+  assert(token_balance == 0);
+
+  console.log("\n=== Alice Delists Token ===");
+
+  await spacePowderClient.unlistTokenWrapper(
+    alice,
+    alice.address(),
+    collection_name,
+    second_token_name
+  );
+
+  token_balance = await tokenClient.getTokenBalance(
+    alice.address(),
+    alice.address(),
+    collection_name,
+    second_token_name
+  );
+  console.log(`\nAlice's token balance: ${token_balance}`);
+  assert(token_balance == 1);
 }
 
 if (require.main === module) {

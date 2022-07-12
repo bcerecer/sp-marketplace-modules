@@ -127,12 +127,17 @@ module SpacePowderMarketplace::FixedPriceSale {
 
     #[test_only]
     use AptosFramework::TokenTransfers::{Self};
+    #[test_only]
     use Std::ASCII;
+    #[test_only]
     use AptosFramework::ManagedCoin;
 
+    #[test_only]
     const E_INCORRECT_TOKEN_OWNER: u64 = 100;
+    #[test_only]
     const E_INVALID_BALANCE: u64 = 101;
 
+    #[test_only]
     public fun create_collection_and_token(
         collection_creator: &signer,
         collection_name: vector<u8>,
@@ -162,6 +167,7 @@ module SpacePowderMarketplace::FixedPriceSale {
         )
     }
 
+    #[test_only]
     public fun before_each_setup(
         collection_creator: &signer,
         collection_name: vector<u8>,

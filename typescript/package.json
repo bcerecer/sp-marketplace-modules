@@ -9,6 +9,8 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
+    "first_transaction": "node --loader ts-node/esm first_transaction.ts",
+    "first_nft": "node --loader ts-node/esm first_nft.ts",
     "FixedPriceSale": "node --loader ts-node/esm FixedPriceSale.ts"
   },
   "keywords": [],

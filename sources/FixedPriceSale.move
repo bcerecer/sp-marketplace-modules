@@ -69,18 +69,18 @@ module SpacePowderMarketplace::FixedPriceSale {
     }
 
     // part of the fixed price sale flow
-    public(script) fun buy_token(buyer: &signer, seller: address, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
+    public(script) fun buy_token(buyer: &signer, seller_addr: address, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
         let token_id = Token::create_token_id_raw(collection_owner_addres, collection_name, token_name);
         let buyer_addr = Signer::address_of(buyer);
-        assert!(buyer_addr != seller, E_INVALID_BUYER);
+        assert!(buyer_addr != seller_addr, E_INVALID_BUYER);
 
-        let listedItemsData = borrow_global_mut<ListedItemsData>(seller);
+        let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
 
         let listed_items = &mut listedItemsData.listed_items;
         let listed_item = Table::borrow_mut(listed_items, token_id);
 
         assert!(Coin::balance<TestCoin>(buyer_addr) >= listed_item.price, E_INSUFFICIENT_FUNDS);
-        Coin::transfer<TestCoin>(buyer, seller, listed_item.price);
+        Coin::transfer<TestCoin>(buyer, seller_addr, listed_item.price);
 
         // This is a copy of locked_token
         let locked_token: &mut Option<Token> = &mut listed_item.locked_token;

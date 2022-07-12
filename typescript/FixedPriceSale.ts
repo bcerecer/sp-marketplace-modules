@@ -1,8 +1,6 @@
 // Copyright (c) The Aptos Foundation
 // SPDX-License-Identifier: Apache-2.0
 
-import assert from "assert";
-
 import {
   Account,
   RestClient,
@@ -10,9 +8,14 @@ import {
   FAUCET_URL,
   FaucetClient,
 } from "./first_transaction";
-import fetch from "cross-fetch";
+import { TokenClient } from "./first_nft";
 
-export class TokenClient {
+export class SpacePowderClient {
+  spacePowderData = {
+    ownerAddress:
+      "0x931c9ed97ad833da1f543da35459c508fdd4d429e13cd146fff4c7a9b545dfca",
+    module: "FixedPriceSale",
+  };
   restClient: RestClient;
 
   constructor(restClient: RestClient) {
@@ -35,13 +38,13 @@ export class TokenClient {
     await this.restClient.waitForTransaction(res["hash"]);
   }
 
-  //:!:>section_1
-  /** Creates a new collection within the specified account */
-  async createCollection(
-    account: Account,
-    name: string,
-    description: string,
-    uri: string
+  // list_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>, price: u64)
+  async listTokenWrapper(
+    seller: Account,
+    collectionOwnerAddress: string,
+    collectionName: string,
+    tokenName: string,
+    price: number
   ) {
     const payload: {
       function: string;
@@ -50,58 +53,25 @@ export class TokenClient {
       type_arguments: any[];
     } = {
       type: "script_function_payload",
-      function: "0x1::Token::create_unlimited_collection_script",
+      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::list_token`,
       type_arguments: [],
       arguments: [
-        Buffer.from(name).toString("hex"),
-        Buffer.from(description).toString("hex"),
-        Buffer.from(uri).toString("hex"),
+        Buffer.from(collectionOwnerAddress).toString("hex"),
+        Buffer.from(collectionName).toString("hex"),
+        Buffer.from(tokenName).toString("hex"),
+        price.toString(),
       ],
     };
-    await this.submitTransactionHelper(account, payload);
+    await this.submitTransactionHelper(seller, payload);
   }
-  //<:!:section_1
 
-  //:!:>section_2
-  async createToken(
-    account: Account,
-    collection_name: string,
-    name: string,
-    description: string,
-    supply: number,
-    uri: string
-  ) {
-    const payload: {
-      function: string;
-      arguments: any[];
-      type: string;
-      type_arguments: any[];
-    } = {
-      type: "script_function_payload",
-      function: "0x1::Token::create_unlimited_token_script",
-      type_arguments: [],
-      arguments: [
-        Buffer.from(collection_name).toString("hex"),
-        Buffer.from(name).toString("hex"),
-        Buffer.from(description).toString("hex"),
-        true,
-        supply.toString(),
-        Buffer.from(uri).toString("hex"),
-        "0",
-      ],
-    };
-    await this.submitTransactionHelper(account, payload);
-  }
-  //<:!:section_2
-
-  //:!:>section_4
-  async offerToken(
-    account: Account,
-    receiver: string,
-    creator: string,
-    collection_name: string,
-    token_name: string,
-    amount: number
+  // buy_token(buyer: &signer, seller_addr: address, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>)
+  async buyTokenWrapper(
+    buyer: Account,
+    sellerAddress: string,
+    collectionOwnerAddress: string,
+    collectionName: string,
+    tokenName: string
   ) {
     const payload: {
       function: string;
@@ -110,27 +80,24 @@ export class TokenClient {
       type_arguments: any[];
     } = {
       type: "script_function_payload",
-      function: "0x1::TokenTransfers::offer_script",
+      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::buy_token`,
       type_arguments: [],
       arguments: [
-        receiver,
-        creator,
-        Buffer.from(collection_name).toString("hex"),
-        Buffer.from(token_name).toString("hex"),
-        amount.toString(),
+        Buffer.from(sellerAddress).toString("hex"),
+        Buffer.from(collectionOwnerAddress).toString("hex"),
+        Buffer.from(collectionName).toString("hex"),
+        Buffer.from(tokenName).toString("hex"),
       ],
     };
-    await this.submitTransactionHelper(account, payload);
+    await this.submitTransactionHelper(buyer, payload);
   }
-  //<:!:section_4
 
-  //:!:>section_5
-  async claimToken(
-    account: Account,
-    sender: string,
-    creator: string,
-    collection_name: string,
-    token_name: string
+  // unlist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>)
+  async unlistTokenWrapper(
+    seller: Account,
+    collectionOwnerAddress: string,
+    collectionName: string,
+    tokenName: string
   ) {
     const payload: {
       function: string;
@@ -139,124 +106,23 @@ export class TokenClient {
       type_arguments: any[];
     } = {
       type: "script_function_payload",
-      function: "0x1::TokenTransfers::claim_script",
+      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::unlist_token`,
       type_arguments: [],
       arguments: [
-        sender,
-        creator,
-        Buffer.from(collection_name).toString("hex"),
-        Buffer.from(token_name).toString("hex"),
+        Buffer.from(collectionOwnerAddress).toString("hex"),
+        Buffer.from(collectionName).toString("hex"),
+        Buffer.from(tokenName).toString("hex"),
       ],
     };
-    await this.submitTransactionHelper(account, payload);
+    await this.submitTransactionHelper(seller, payload);
   }
-  //<:!:section_5
-
-  async cancelTokenOffer(
-    account: Account,
-    receiver: string,
-    creator: string,
-    token_creation_num: number
-  ) {
-    const payload: {
-      function: string;
-      arguments: string[];
-      type: string;
-      type_arguments: any[];
-    } = {
-      type: "script_function_payload",
-      function: "0x1::TokenTransfers::cancel_offer_script",
-      type_arguments: [],
-      arguments: [receiver, creator, token_creation_num.toString()],
-    };
-    await this.submitTransactionHelper(account, payload);
-  }
-
-  //:!:>section_3
-  async tableItem(
-    handle: string,
-    keyType: string,
-    valueType: string,
-    key: any
-  ): Promise<any> {
-    const response = await fetch(
-      `${this.restClient.url}/tables/${handle}/item`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          key_type: keyType,
-          value_type: valueType,
-          key: key,
-        }),
-      }
-    );
-
-    if (response.status == 404) {
-      return null;
-    } else if (response.status != 200) {
-      assert(response.status == 200, await response.text());
-    } else {
-      return await response.json();
-    }
-  }
-
-  async getTokenBalance(
-    owner: string,
-    creator: string,
-    collection_name: string,
-    token_name: string
-  ): Promise<number> {
-    const token_store = await this.restClient.accountResource(
-      creator,
-      "0x1::Token::TokenStore"
-    );
-
-    const token_id = {
-      creator: creator,
-      collection: collection_name,
-      name: token_name,
-    };
-
-    const token = await this.tableItem(
-      token_store["data"]["tokens"]["handle"],
-      "0x1::Token::TokenId",
-      "0x1::Token::Token",
-      token_id
-    );
-    return token["value"];
-  }
-
-  async getTokenData(
-    creator: string,
-    collection_name: string,
-    token_name: string
-  ): Promise<any> {
-    const collections = await this.restClient.accountResource(
-      creator,
-      "0x1::Token::Collections"
-    );
-
-    const token_id = {
-      creator: creator,
-      collection: collection_name,
-      name: token_name,
-    };
-
-    return await this.tableItem(
-      collections["data"]["token_data"]["handle"],
-      "0x1::Token::TokenId",
-      "0x1::Token::TokenData",
-      token_id
-    );
-  }
-  //<:!:section_3
 }
 
 async function main() {
   const restClient = new RestClient(TESTNET_URL);
-  const client = new TokenClient(restClient);
-  const faucet_client = new FaucetClient(FAUCET_URL, restClient);
+  const spacePowderClient = new SpacePowderClient(restClient);
+  const tokenClient = new TokenClient(restClient);
+  const faucetClient = new FaucetClient(FAUCET_URL, restClient);
 
   const alice = new Account();
   const bob = new Account();
@@ -277,8 +143,8 @@ async function main() {
       .slice(0, 64)}`
   );
 
-  await faucet_client.fundAccount(alice.address(), 10_000_000);
-  await faucet_client.fundAccount(bob.address(), 10_000_000);
+  await faucetClient.fundAccount(alice.address(), 10_000_000);
+  await faucetClient.fundAccount(bob.address(), 10_000_000);
 
   console.log("\n=== Initial Balances ===");
   console.log(`Alice: ${await restClient.accountBalance(alice.address())}`);
@@ -286,13 +152,13 @@ async function main() {
 
   console.log("\n=== Creating Collection and Token ===");
 
-  await client.createCollection(
+  await tokenClient.createCollection(
     alice,
     collection_name,
     "Alice's simple collection",
     "https://aptos.dev"
   );
-  await client.createToken(
+  await tokenClient.createToken(
     alice,
     collection_name,
     token_name,
@@ -301,50 +167,27 @@ async function main() {
     "https://aptos.dev/img/nyan.jpeg"
   );
 
-  let token_balance = await client.getTokenBalance(
-    alice.address(),
-    alice.address(),
-    collection_name,
-    token_name
-  );
-  console.log(`Alice's token balance: ${token_balance}`);
-  const token_data = await client.getTokenData(
+  const token_data = await tokenClient.getTokenData(
     alice.address(),
     collection_name,
     token_name
   );
   console.log(`Alice's token data: ${JSON.stringify(token_data)}`);
 
-  console.log("\n=== Transferring the token to Bob ===");
-  await client.offerToken(
-    alice,
-    bob.address(),
+  let token_balance = await tokenClient.getTokenBalance(
+    alice.address(),
     alice.address(),
     collection_name,
-    token_name,
-    1
+    token_name
   );
-  await client.claimToken(
-    bob,
-    alice.address(),
+  console.log(`\nAlice's token balance: ${token_balance}`);
+  token_balance = await tokenClient.getTokenBalance(
+    bob.address(),
     alice.address(),
     collection_name,
     token_name
   );
 
-  token_balance = await client.getTokenBalance(
-    alice.address(),
-    alice.address(),
-    collection_name,
-    token_name
-  );
-  console.log(`Alice's token balance: ${token_balance}`);
-  token_balance = await client.getTokenBalance(
-    bob.address(),
-    alice.address(),
-    collection_name,
-    token_name
-  );
   console.log(`Bob's token balance: ${token_balance}`);
 }
 

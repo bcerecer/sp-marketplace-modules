@@ -1,6 +1,6 @@
 // Copyright (c) The Aptos Foundation
 // SPDX-License-Identifier: Apache-2.0
-
+import assert from "assert";
 import {
   Account,
   RestClient,
@@ -13,7 +13,7 @@ import { TokenClient } from "./first_nft";
 export class SpacePowderClient {
   spacePowderData = {
     ownerAddress:
-      "0x931c9ed97ad833da1f543da35459c508fdd4d429e13cd146fff4c7a9b545dfca",
+      "0x69f2cbcf3934c8b6b0ff79f10b5db1e12cedfb932f2c74cf365e26ccbe52dc3",
     module: "FixedPriceSale",
   };
   restClient: RestClient;
@@ -53,10 +53,11 @@ export class SpacePowderClient {
       type_arguments: any[];
     } = {
       type: "script_function_payload",
-      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::list_token`,
+      function:
+        "0x69f2cbcf3934c8b6b0ff79f10b5db1e12cedfb932f2c74cf365e26ccbe52dc3::FixedPriceSale::list_token",
       type_arguments: [],
       arguments: [
-        Buffer.from(collectionOwnerAddress).toString("hex"),
+        collectionOwnerAddress,
         Buffer.from(collectionName).toString("hex"),
         Buffer.from(tokenName).toString("hex"),
         price.toString(),
@@ -83,8 +84,8 @@ export class SpacePowderClient {
       function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::buy_token`,
       type_arguments: [],
       arguments: [
-        Buffer.from(sellerAddress).toString("hex"),
-        Buffer.from(collectionOwnerAddress).toString("hex"),
+        sellerAddress,
+        collectionOwnerAddress,
         Buffer.from(collectionName).toString("hex"),
         Buffer.from(tokenName).toString("hex"),
       ],
@@ -109,7 +110,7 @@ export class SpacePowderClient {
       function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::unlist_token`,
       type_arguments: [],
       arguments: [
-        Buffer.from(collectionOwnerAddress).toString("hex"),
+        collectionOwnerAddress,
         Buffer.from(collectionName).toString("hex"),
         Buffer.from(tokenName).toString("hex"),
       ],
@@ -131,24 +132,35 @@ async function main() {
 
   console.log("\n=== Addresses ===");
   console.log(
-    `Alice: ${alice.address()}. Key Seed: ${Buffer.from(
+    `Alice Account: 0x${alice.address()} SecretKey: ${Buffer.from(
       alice.signingKey.secretKey
     )
       .toString("hex")
       .slice(0, 64)}`
   );
   console.log(
-    `Bob: ${bob.address()}. Key Seed: ${Buffer.from(bob.signingKey.secretKey)
+    `Bob Account: 0x${bob.address()} SecretKey: ${Buffer.from(
+      bob.signingKey.secretKey
+    )
       .toString("hex")
       .slice(0, 64)}`
   );
 
-  await faucetClient.fundAccount(alice.address(), 10_000_000);
-  await faucetClient.fundAccount(bob.address(), 10_000_000);
+  const maxFaucetAmount = 20_000;
+  await faucetClient.fundAccount(alice.address(), maxFaucetAmount);
+  await faucetClient.fundAccount(bob.address(), maxFaucetAmount);
 
   console.log("\n=== Initial Balances ===");
   console.log(`Alice: ${await restClient.accountBalance(alice.address())}`);
   console.log(`Bob: ${await restClient.accountBalance(bob.address())}`);
+  assert(
+    await restClient.accountBalance(alice.address()),
+    maxFaucetAmount.toString()
+  );
+  assert(
+    await restClient.accountBalance(bob.address()),
+    maxFaucetAmount.toString()
+  );
 
   console.log("\n=== Creating Collection and Token ===");
 
@@ -167,28 +179,41 @@ async function main() {
     "https://aptos.dev/img/nyan.jpeg"
   );
 
-  const token_data = await tokenClient.getTokenData(
-    alice.address(),
-    collection_name,
-    token_name
-  );
-  console.log(`Alice's token data: ${JSON.stringify(token_data)}`);
-
-  let token_balance = await tokenClient.getTokenBalance(
+  let token_balance: number = await tokenClient.getTokenBalance(
     alice.address(),
     alice.address(),
     collection_name,
     token_name
   );
   console.log(`\nAlice's token balance: ${token_balance}`);
+  assert(token_balance == 1);
+
   token_balance = await tokenClient.getTokenBalance(
     bob.address(),
     alice.address(),
     collection_name,
     token_name
   );
-
   console.log(`Bob's token balance: ${token_balance}`);
+  assert(token_balance == 0);
+
+  const tokenPrice = 100;
+  await spacePowderClient.listTokenWrapper(
+    alice,
+    alice.address(),
+    collection_name,
+    token_name,
+    tokenPrice
+  );
+
+  token_balance = await tokenClient.getTokenBalance(
+    alice.address(),
+    alice.address(),
+    collection_name,
+    token_name
+  );
+  console.log(`\nAlice's token balance: ${token_balance}`);
+  assert(token_balance == 0);
 }
 
 if (require.main === module) {

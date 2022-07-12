@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es2021",
-      "dom"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["es2021", "dom"],
+    "types": ["node"],
     "module": "commonjs",
     "target": "es2021",
     "esModuleInterop": true,
@@ -15,13 +10,8 @@
     "noImplicitAny": true,
     "allowJs": true,
     "preserveConstEnums": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
-  "include": [
-    "first_transaction.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "include": ["first_transaction.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

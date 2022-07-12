@@ -208,7 +208,7 @@ export class TokenClient {
     token_name: string
   ): Promise<number> {
     const token_store = await this.restClient.accountResource(
-      creator,
+      owner,
       "0x1::Token::TokenStore"
     );
 
@@ -218,13 +218,17 @@ export class TokenClient {
       name: token_name,
     };
 
-    const token = await this.tableItem(
-      token_store["data"]["tokens"]["handle"],
-      "0x1::Token::TokenId",
-      "0x1::Token::Token",
-      token_id
-    );
-    return token["value"];
+    if (token_store == null) {
+      return 0;
+    } else {
+      const token = await this.tableItem(
+        token_store["data"]["tokens"]["handle"],
+        "0x1::Token::TokenId",
+        "0x1::Token::Token",
+        token_id
+      );
+      return token["value"];
+    }
   }
 
   async getTokenData(
@@ -314,6 +318,14 @@ async function main() {
     token_name
   );
   console.log(`Alice's token data: ${JSON.stringify(token_data)}`);
+
+  token_balance = await client.getTokenBalance(
+    bob.address(),
+    alice.address(),
+    collection_name,
+    token_name
+  );
+  console.log(`Bob's token balance: ${token_balance}`);
 
   console.log("\n=== Transferring the token to Bob ===");
   await client.offerToken(

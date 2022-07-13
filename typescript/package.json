@@ -11,6 +11,7 @@
   "scripts": {
     "first_transaction": "node --loader ts-node/esm first_transaction.ts",
     "first_nft": "node --loader ts-node/esm first_nft.ts",
+    "create_nft_collection": "node --loader ts-node/esm ./scripts/create_nft_collection.ts",
     "FixedPriceSale": "node --loader ts-node/esm FixedPriceSale.ts"
   },
   "keywords": [],

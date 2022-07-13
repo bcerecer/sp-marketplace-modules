@@ -67,14 +67,6 @@ async function main() {
       "https://aptos.dev/img/nyan.jpeg"
     );
   }
-
-  let token_balance: number = await tokenClient.getTokenBalance(
-    collection_creator.address(),
-    collection_creator.address(),
-    collection_name,
-    token_name
-  );
-  console.log(`\nCollection creator's token balance: ${token_balance}`);
 }
 
 if (require.main === module) {

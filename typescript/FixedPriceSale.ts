@@ -13,7 +13,7 @@ import { TokenClient } from "./first_nft";
 export class SpacePowderClient {
   spacePowderData = {
     ownerAddress:
-      "0x69f2cbcf3934c8b6b0ff79f10b5db1e12cedfb932f2c74cf365e26ccbe52dc3",
+      "0xd8928bd1e4dcf324fc430c19ce9f88564df97a8acfa83a346232f281f997a943",
     module: "FixedPriceSale",
   };
   restClient: RestClient;
@@ -92,8 +92,8 @@ export class SpacePowderClient {
     await this.submitTransactionHelper(buyer, payload);
   }
 
-  // unlist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>)
-  async unlistTokenWrapper(
+  // delist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>)
+  async delistTokenWrapper(
     seller: Account,
     collectionOwnerAddress: string,
     collectionName: string,
@@ -292,7 +292,7 @@ async function main() {
 
   console.log("\n=== Alice Delists Token ===");
 
-  await spacePowderClient.unlistTokenWrapper(
+  await spacePowderClient.delistTokenWrapper(
     alice,
     alice.address(),
     collection_name,

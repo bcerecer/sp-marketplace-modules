@@ -26,8 +26,8 @@ module SpacePowderMarketplace::FixedPriceSale {
         id: TokenId,
     }
 
-    // Set of data sent to the event stream during a unlisting of a token (for fixed price)
-    struct UnlistEvent has drop, store {
+    // Set of data sent to the event stream during a delisting of a token (for fixed price)
+    struct DelistEvent has drop, store {
         id: TokenId,
     }
 
@@ -35,7 +35,16 @@ module SpacePowderMarketplace::FixedPriceSale {
         listed_items: Table<TokenId, ListedItem>,
         listing_events: EventHandle<ListEvent>,
         buying_events: EventHandle<BuyEvent>,
-        unlisting_events: EventHandle<UnlistEvent>,
+        delisting_events: EventHandle<DelistEvent>,
+    }
+
+    public(script) fun init_marketplace(seller: &signer) {
+        move_to(seller, ListedItemsData {
+            listed_items: Table::new<TokenId, ListedItem>(),
+            listing_events: Event::new_event_handle<ListEvent>(seller),
+            buying_events: Event::new_event_handle<BuyEvent>(seller),
+            delisting_events: Event::new_event_handle<DelistEvent>(seller),
+        });
     }
 
     // part of the fixed price sale flow
@@ -44,12 +53,7 @@ module SpacePowderMarketplace::FixedPriceSale {
         let seller_addr = Signer::address_of(seller);
 
         if (!exists<ListedItemsData>(seller_addr)) {
-            move_to(seller, ListedItemsData {
-                listed_items: Table::new<TokenId, ListedItem>(),
-                listing_events: Event::new_event_handle<ListEvent>(seller),
-                buying_events: Event::new_event_handle<BuyEvent>(seller),
-                unlisting_events: Event::new_event_handle<UnlistEvent>(seller),
-            });
+            init_marketplace(seller);
         };
 
         let token = Token::withdraw_token(seller, token_id, 1);
@@ -99,7 +103,7 @@ module SpacePowderMarketplace::FixedPriceSale {
         );
     }
 
-    public(script) fun unlist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
+    public(script) fun delist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
         let token_id = Token::create_token_id_raw(collection_owner_addres, collection_name, token_name);
         let seller_addr = Signer::address_of(seller);
         
@@ -117,9 +121,9 @@ module SpacePowderMarketplace::FixedPriceSale {
         let ListedItem{price: _, locked_token: remove_empty_option} = Table::remove(listed_items, token_id);
         Option::destroy_none(remove_empty_option);
 
-        Event::emit_event<UnlistEvent>(
-            &mut listedItemsData.unlisting_events,
-            UnlistEvent { id: token_id },
+        Event::emit_event<DelistEvent>(
+            &mut listedItemsData.delisting_events,
+            DelistEvent { id: token_id },
         );
     }
 
@@ -287,7 +291,7 @@ module SpacePowderMarketplace::FixedPriceSale {
     }
 
     #[test(faucet = @0x1, seller = @0x2, buyer = @0x3, collection_creator = @0x4)]
-    public(script) fun WHEN_seller_unlist_THEN_succeeds(faucet: signer, seller: signer, buyer: signer, collection_creator: signer) acquires ListedItemsData {
+    public(script) fun WHEN_seller_delist_THEN_succeeds(faucet: signer, seller: signer, buyer: signer, collection_creator: signer) acquires ListedItemsData {
         // Setup
         let collection_name: vector<u8> = b"Any collection name";
         let token_name: vector<u8> = b"Any token name";
@@ -312,8 +316,8 @@ module SpacePowderMarketplace::FixedPriceSale {
             assert!(Token::balance_of(seller_addr, token_id) == 0, E_INCORRECT_TOKEN_OWNER);
         };
 
-        // Unlist listed token(NFT)
-        unlist_token(&seller, collection_creator_addr, collection_name, token_name);
+        // Delist listed token(NFT)
+        delist_token(&seller, collection_creator_addr, collection_name, token_name);
         {
             // Verify listed_items(escrow) entry was removed
             let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);

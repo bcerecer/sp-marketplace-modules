@@ -3,8 +3,9 @@ name = "space_powder_marketplace"
 version = "0.1.0"
 
 [addresses]
-AptosFramework = "0x1"
-SpacePowderMarketplace = "d8928bd1e4dcf324fc430c19ce9f88564df97a8acfa83a346232f281f997a943"
+aptos_framework = "0x1"
+space_powder_marketplace = "1f7a4d05dc1ff9434ed2dac4f123d44ed27cc7248ef92ff39c1d87b8f029d741"
 
 [dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "devnet" }
+AptosFramework = { local = "/Users/nambawan/Documents/Aptos/aptos-core/aptos-move/framework/aptos-framework"}
+# AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "devnet" }

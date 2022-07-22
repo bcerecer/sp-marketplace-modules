@@ -1,5 +1,5 @@
 {
-  "name": "aptos-tutorial",
+  "name": "space-powder-marketplace-typescript",
   "description": "Aptos Typescript tutorial files",
   "version": "0.0.1",
   "homepage": "https://aptoslabs.com",
@@ -9,13 +9,12 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "first_transaction": "node --loader ts-node/esm first_transaction.ts",
-    "first_nft": "node --loader ts-node/esm first_nft.ts",
-    "create_nft_collection": "node --loader ts-node/esm ./scripts/create_nft_collection.ts",
-    "fixed_price_sale": "node --loader ts-node/esm fixed_price_sale.ts"
+    "buy_it_now": "node --loader ts-node/esm buy_it_now.ts"
   },
   "keywords": [],
   "dependencies": {
+    "@martiandao/aptos-web3-bip44.js": "^1.1.3",
+    "aptos": "^1.2.0",
     "cross-fetch": "^3.1.5",
     "js-sha3": "^0.8.0",
     "tweetnacl": "^1.0.3"

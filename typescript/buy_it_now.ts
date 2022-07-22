@@ -13,8 +13,8 @@ import { TokenClient } from "./first_nft";
 export class SpacePowderClient {
   spacePowderData = {
     ownerAddress:
-      "0xd8928bd1e4dcf324fc430c19ce9f88564df97a8acfa83a346232f281f997a943",
-    module: "FixedPriceSale",
+      "e555ea6e4621b4cc8b526d5b4959e832db4a341e718551cf1d476bef497b6b8a",
+    module: "buy_it_now",
   };
   restClient: RestClient;
 
@@ -106,7 +106,7 @@ export class SpacePowderClient {
       type_arguments: any[];
     } = {
       type: "script_function_payload",
-      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::unlist_token`,
+      function: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::delist_token`,
       type_arguments: [],
       arguments: [
         collectionOwnerAddress,
@@ -252,6 +252,43 @@ async function main() {
   console.log(`\Alice's token balance: ${token_balance}`);
   assert(token_balance == 0);
 
+  console.log("\n=== Bob Lists Token ===");
+
+  await spacePowderClient.listTokenWrapper(
+    bob,
+    alice.address(),
+    collection_name,
+    first_token_name,
+    tokenPrice
+  );
+
+  token_balance = await tokenClient.getTokenBalance(
+    bob.address(),
+    alice.address(),
+    collection_name,
+    first_token_name
+  );
+  console.log(`\Bob's token balance: ${token_balance}`);
+  assert(token_balance == 0);
+
+  console.log("\n=== Bob Delists Token ===");
+
+  await spacePowderClient.delistTokenWrapper(
+    bob,
+    alice.address(),
+    collection_name,
+    first_token_name
+  );
+
+  token_balance = await tokenClient.getTokenBalance(
+    bob.address(),
+    alice.address(),
+    collection_name,
+    first_token_name
+  );
+  console.log(`\Bob's token balance: ${token_balance}`);
+  assert(token_balance == 1);
+
   console.log("\n=== Alice Creates Second Token ===");
   const second_token_name = "Alice's second token";
   await tokenClient.createToken(
@@ -272,7 +309,6 @@ async function main() {
   assert(token_balance == 1);
 
   console.log("\n=== Alice Lists Token ===");
-
   await spacePowderClient.listTokenWrapper(
     alice,
     alice.address(),
@@ -289,24 +325,6 @@ async function main() {
   );
   console.log(`\nAlice's token balance: ${token_balance}`);
   assert(token_balance == 0);
-
-  console.log("\n=== Alice Delists Token ===");
-
-  await spacePowderClient.delistTokenWrapper(
-    alice,
-    alice.address(),
-    collection_name,
-    second_token_name
-  );
-
-  token_balance = await tokenClient.getTokenBalance(
-    alice.address(),
-    alice.address(),
-    collection_name,
-    second_token_name
-  );
-  console.log(`\nAlice's token balance: ${token_balance}`);
-  assert(token_balance == 1);
 }
 
 if (require.main === module) {

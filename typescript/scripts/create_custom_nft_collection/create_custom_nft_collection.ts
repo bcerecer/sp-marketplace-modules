@@ -1,9 +1,14 @@
-import { maxFaucetAmount } from "../../utils/common";
+import { maxFaucetAmount } from "../../utils/constants";
 import {
   martianWalletClient,
   martianFaucetClient,
 } from "../../wallets/martian";
-import { collectionData, tokenData } from "./nyanCollectionData";
+import {
+  nyanCollectionData,
+  tokenData,
+} from "./collections_data/nyan_collection_data";
+
+const collectionData = nyanCollectionData;
 
 async function main() {
   // create new wallet (10 test tokens airdropped by default)

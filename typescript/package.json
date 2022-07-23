@@ -3,7 +3,7 @@
   "description": "Space Powder smart contract testing typescript files",
   "version": "0.0.1",
   "scripts": {
-    "buy_it_now_test": "node --loader ts-node/esm scripts/space_powder_test/buy_it_now.test.ts",
+    "buy_it_now_test": "node --loader ts-node/esm scripts/space_powder/buy_it_now/buy_it_now.test.ts",
     "create_nyan_nft_collection": "node --loader ts-node/esm scripts/nfts/create_nyan_nft_collection.ts"
   },
   "keywords": [],

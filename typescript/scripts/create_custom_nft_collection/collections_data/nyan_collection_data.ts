@@ -1,4 +1,4 @@
-export const collectionData = {
+export const nyanCollectionData = {
   name: "Aptos Nyan Cats",
   description: "The most nyantic collection in the Aptosverse",
   uri: "https://spacepowder.io",

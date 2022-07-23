@@ -47,7 +47,7 @@ module space_powder_marketplace::buy_now {
         });
     }
 
-    public fun list_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>, price: u64) acquires ListedItemsData {
+    public entry fun list_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>, price: u64) acquires ListedItemsData {
         let token_id = token::create_token_id_raw(collection_owner_addres, collection_name, token_name);
         let seller_addr = signer::address_of(seller);
 
@@ -71,7 +71,7 @@ module space_powder_marketplace::buy_now {
         })
     }
 
-    public fun buy_token(buyer: &signer, seller_addr: address, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
+    public entry fun buy_token(buyer: &signer, seller_addr: address, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
         let token_id = token::create_token_id_raw(collection_owner_addres, collection_name, token_name);
         let buyer_addr = signer::address_of(buyer);
         assert!(buyer_addr != seller_addr, E_INVALID_BUYER);
@@ -101,7 +101,7 @@ module space_powder_marketplace::buy_now {
         );
     }
 
-    public fun delist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
+    public entry fun delist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>) acquires ListedItemsData {
         let token_id = token::create_token_id_raw(collection_owner_addres, collection_name, token_name);
         let seller_addr = signer::address_of(seller);
         

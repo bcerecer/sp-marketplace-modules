@@ -42,6 +42,11 @@ async function main() {
     collection: collectionName,
     name: firstTokenName,
   };
+  const secondTokenId = {
+    creator: collectionCreatorAddress,
+    collection: collectionName,
+    name: secondTokenName,
+  };
 
   console.log("\n=== Addresses ===");
   console.log(
@@ -71,15 +76,14 @@ async function main() {
   console.log(`Buyer's firstToken balance: ${firstTokenBalance}`);
   assert(firstTokenBalance == 0);
 
-  /******************** CREATOR LISTS FIRST TOKEN ********************/
+  /*CREATOR LISTS FIRST TOKEN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
   console.log("\n=== CollectionCreator Lists First Token ====");
-  const firstTokenListedName = tokensNames[0];
   const firstTokenListedPrice = 100;
 
   let payload = buyNowClient.getListTokenPayload(
     collectionCreatorAddress,
     collectionName,
-    firstTokenListedName,
+    firstTokenName,
     firstTokenListedPrice
   );
   await martianWalletClient.signGenericTransaction(
@@ -98,8 +102,9 @@ async function main() {
   ).value;
   console.log(`\n CollectionCreator firstToken balance: ${firstTokenBalance}`);
   assert(firstTokenBalance == 0);
+  /**<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CREATOR LISTS FIRST TOKEN*/
 
-  /******************** BUYER LISTS FIRST TOKEN ********************/
+  /**BUYER LISTS FIRST TOKEN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
   console.log("\n=== CollectionCreator Buys First Token ====");
   await martianFaucetClient.fundAccount(buyerAddress, maxFaucetAmount);
 
@@ -107,7 +112,7 @@ async function main() {
     collectionCreatorAddress,
     collectionCreatorAddress,
     collectionName,
-    firstTokenListedName
+    firstTokenName
   );
   await martianWalletClient.signGenericTransaction(
     buyerAccount,
@@ -124,9 +129,61 @@ async function main() {
   ).value;
   console.log(`\n Buyer firstToken balance: ${firstTokenBalance}`);
   assert(firstTokenBalance == 1);
+  /**<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< BUYER LISTS FIRST TOKEN*/
 
-  /******************** CREATOR LISTS SECOND TOKEN ********************/
-  /******************** CREATOR DELISTS SECOND TOKEN ********************/
+  /*CREATOR LISTS SECOND TOKEN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+  const secondTokenListedPrice = 200;
+
+  payload = buyNowClient.getListTokenPayload(
+    collectionCreatorAddress,
+    collectionName,
+    secondTokenName,
+    secondTokenListedPrice
+  );
+  await martianWalletClient.signGenericTransaction(
+    collectionCreatorAccount,
+    payload.func,
+    payload.args,
+    payload.type_arguments
+  );
+
+  console.log("Second token name: ", secondTokenName);
+  let secondTokenBalance = (
+    await martianTokenClient.getTokenBalanceForAccount(
+      collectionCreatorAddress,
+      secondTokenId
+    )
+  ).value;
+  console.log(
+    `\n CollectionCreator secondToken balance: ${secondTokenBalance}`
+  );
+  assert(secondTokenBalance == 0);
+  /**<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CREATOR LISTS SECOND TOKEN*/
+
+  /*CREATOR DELISTS SECOND TOKEN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+  payload = buyNowClient.getDelistTokenPayload(
+    collectionCreatorAddress,
+    collectionName,
+    secondTokenName
+  );
+  await martianWalletClient.signGenericTransaction(
+    collectionCreatorAccount,
+    payload.func,
+    payload.args,
+    payload.type_arguments
+  );
+
+  secondTokenBalance = (
+    await martianTokenClient.getTokenBalanceForAccount(
+      collectionCreatorAddress,
+      secondTokenId
+    )
+  ).value;
+  console.log(
+    `\n CollectionCreator secondToken balance: ${secondTokenBalance}`
+  );
+  assert(secondTokenBalance == 1);
+  /**<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CREATOR DELISTS SECOND TOKEN*/
 }
 
 main();

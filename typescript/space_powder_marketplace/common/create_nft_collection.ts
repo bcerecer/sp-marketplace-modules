@@ -36,7 +36,7 @@ export const createNftCollection = async (collectionCreatorWallet: Wallet) => {
   );
 
   const tokensNames = [];
-  for (let i = 1; i <= 1; i++) {
+  for (let i = 1; i <= 3; i++) {
     // Transfer maxFaucetAmount for every modded variable to avoid going out of balance
     if (i % 10 == 0) {
       await martianFaucetClient.fundAccount(

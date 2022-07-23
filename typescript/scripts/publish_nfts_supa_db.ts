@@ -11,8 +11,6 @@ const supabaseClient = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 const collectionCreatorAddress =
   "0x867f1c59d09894968617f27bcd8bcf4de0726df8fbc0ed01f1c6e5bb419573b4";
 const collectionName = "Aptos Nyan Cats";
-const collectionImage =
-  "https://rxbadlmhqshszwaxifut.supabase.co/storage/v1/object/public/aptos-nyan-cats/nyan_cat.gif";
 const collecitonPath = "aptos_nyan_cats";
 /***************** PARAMS *****************/
 
@@ -46,6 +44,7 @@ async function main() {
   );
   const currentTime = new Date().toISOString();
 
+  let collectionImage: string = null;
   const tokens: any[] = [];
   createTokenEvents.map(async (event) => {
     if (event.data.id.collection === collectionName) {
@@ -57,6 +56,9 @@ async function main() {
         collection_name: collectionName,
         created_at: currentTime,
       };
+      if (!collectionImage) {
+        collectionImage = token.img_url;
+      }
       tokens.push(token);
     }
   });

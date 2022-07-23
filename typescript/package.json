@@ -1,20 +1,15 @@
 {
   "name": "space-powder-marketplace-typescript",
-  "description": "Aptos Typescript tutorial files",
+  "description": "Space Powder smart contract testing typescript files",
   "version": "0.0.1",
-  "homepage": "https://aptoslabs.com",
-  "repository": "https://github.com/aptos-labs/aptos-core",
-  "maintainers": [
-    "Aptos Labs <opensource@aptoslabs.com>"
-  ],
-  "license": "Apache-2.0",
   "scripts": {
-    "buy_it_now": "node --loader ts-node/esm buy_it_now.ts"
+    "buy_it_now": "node --loader ts-node/esm scripts/space_powder_test/buy_it_now.test.ts"
   },
   "keywords": [],
   "dependencies": {
     "@martiandao/aptos-web3-bip44.js": "^1.1.3",
     "aptos": "^1.2.0",
+    "assert": "^2.0.0",
     "cross-fetch": "^3.1.5",
     "js-sha3": "^0.8.0",
     "tweetnacl": "^1.0.3"

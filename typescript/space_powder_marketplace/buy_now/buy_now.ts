@@ -7,13 +7,13 @@ type PayloadParams = {
 export class SpacePowderBuyNowClient {
   spacePowderData = {
     ownerAddress:
-      "8d27c6260086d826da7defe88d7bf761d12dbf77935876b65b5a9624d7ea7c90",
+      "0x78b4ee642c178e5e47f52a53d249bb80ff175ce254d81120a05abf74d37a23cb",
     module: "buy_now",
   };
 
   // list_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>, price: u64)
   getListTokenPayload(
-    collectionOwnerAddress: string,
+    collectionCreatorAddress: string,
     collectionName: string,
     tokenName: string,
     price: number
@@ -21,7 +21,7 @@ export class SpacePowderBuyNowClient {
     return {
       func: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::list_token`,
       args: [
-        collectionOwnerAddress,
+        collectionCreatorAddress,
         Buffer.from(collectionName).toString("hex"),
         Buffer.from(tokenName).toString("hex"),
         price.toString(),
@@ -33,7 +33,7 @@ export class SpacePowderBuyNowClient {
   // buy_token(buyer: &signer, seller_addr: address, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>)
   getBuyTokenPayload(
     sellerAddress: string,
-    collectionOwnerAddress: string,
+    collectionCreatorAddress: string,
     collectionName: string,
     tokenName: string
   ): PayloadParams {
@@ -41,7 +41,7 @@ export class SpacePowderBuyNowClient {
       func: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::buy_token`,
       args: [
         sellerAddress,
-        collectionOwnerAddress,
+        collectionCreatorAddress,
         Buffer.from(collectionName).toString("hex"),
         Buffer.from(tokenName).toString("hex"),
       ],
@@ -51,14 +51,14 @@ export class SpacePowderBuyNowClient {
 
   // delist_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>)
   getDelistTokenPayload(
-    collectionOwnerAddress: string,
+    collectionCreatorAddress: string,
     collectionName: string,
     tokenName: string
   ): PayloadParams {
     return {
       func: `${this.spacePowderData.ownerAddress}::${this.spacePowderData.module}::delist_token`,
       args: [
-        collectionOwnerAddress,
+        collectionCreatorAddress,
         Buffer.from(collectionName).toString("hex"),
         Buffer.from(tokenName).toString("hex"),
       ],

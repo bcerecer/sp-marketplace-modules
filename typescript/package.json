@@ -5,8 +5,7 @@
   "scripts": {
     "buy_now_test": "node --loader ts-node/esm space_powder_marketplace/buy_now/buy_now.test.ts",
     "create_custom_nft_collection": "node --loader ts-node/esm scripts/create_custom_nft_collection/create_custom_nft_collection.ts",
-    "publish_nfts_supa_db": "node --loader ts-node/esm scripts/publish_nfts_supa_db.ts",
-    "write_nfts_from_collection_to_file": "node --loader ts-node/esm scripts/write_nfts_from_collection_to_file.ts"
+    "publish_nfts_supa_db": "node --loader ts-node/esm scripts/publish_nfts_supa_db.ts"
   },
   "keywords": [],
   "dependencies": {

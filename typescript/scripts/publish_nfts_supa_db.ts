@@ -9,7 +9,7 @@ const supabaseClient = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 
 /***************** PARAMS *****************/
 const collectionCreatorAddress =
-  "0x867f1c59d09894968617f27bcd8bcf4de0726df8fbc0ed01f1c6e5bb419573b4";
+  "0xca75b82095d95731d0fbbb79b89137e46b2a4bfc8cec25933a343254e3e8bce2";
 const collectionName = "Aptos Nyan Cats";
 const collecitonPath = "aptos_nyan_cats";
 /***************** PARAMS *****************/
@@ -49,11 +49,11 @@ async function main() {
   createTokenEvents.map(async (event) => {
     if (event.data.id.collection === collectionName) {
       const token = {
-        token_id: `${collectionCreatorAddress}::${collectionName}::${event.data.token_data.name}`,
+        id: `${collectionCreatorAddress}::${collectionName}::${event.data.token_data.name}`,
         name: event.data.token_data.name,
         listed: false,
         img_url: event.data.token_data.uri,
-        collection_name: collectionName,
+        collection_id: `${collectionCreatorAddress}::${collectionName}`,
         created_at: currentTime,
       };
       if (!collectionImage) {
@@ -63,15 +63,9 @@ async function main() {
     }
   });
 
-  const { data: tokensDbData, error: tokensDbError } = await supabaseClient
-    .from("tokens")
-    .insert(tokens);
-  console.log(`tokensDbData: ${JSON.stringify(tokensDbData)}`);
-  console.log(`tokensDbError: ${JSON.stringify(tokensDbError)}`);
-
   const { data: collectionDbData, error: collectionDbError } =
     await supabaseClient.from("collections").insert({
-      collection_id: `${collectionCreatorAddress}::${collectionName}`,
+      id: `${collectionCreatorAddress}::${collectionName}`,
       name: collectionName,
       tokens_created: collection.count,
       likes: 0,
@@ -84,6 +78,20 @@ async function main() {
     });
   console.log(`collectionDbData: ${JSON.stringify(collectionDbData)}`);
   console.log(`collectionDbError: ${JSON.stringify(collectionDbError)}`);
+
+  if (collectionDbError) {
+    throw new Error("Error adding to collection db");
+  }
+
+  const { data: tokensDbData, error: tokensDbError } = await supabaseClient
+    .from("tokens")
+    .insert(tokens);
+
+  if (tokensDbError) {
+    throw new Error("Error adding to tokens db");
+  }
+  console.log(`tokensDbData: ${JSON.stringify(tokensDbData)}`);
+  console.log(`tokensDbError: ${JSON.stringify(tokensDbError)}`);
 }
 
 main();

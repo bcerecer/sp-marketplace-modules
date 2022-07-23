@@ -23,18 +23,19 @@ export const createNftCollection = async (collectionCreatorWallet: Wallet) => {
     maxFaucetAmount
   );
 
-  const collection_name = "Test Collection";
-  const token_name = "Test token";
+  const collectionName = "Test Collection";
+  const tokenName = "Test token";
 
   console.log("\n=== Creating Collection and Token ===");
 
   await martianWalletClient.createCollection(
     collectionCreatorAccount,
-    collection_name,
+    collectionName,
     "Collection creator's simple collection",
     "https://aptos.dev"
   );
 
+  const tokensNames = [];
   for (let i = 1; i <= 1; i++) {
     // Transfer maxFaucetAmount for every modded variable to avoid going out of balance
     if (i % 10 == 0) {
@@ -46,12 +47,13 @@ export const createNftCollection = async (collectionCreatorWallet: Wallet) => {
 
     await martianWalletClient.createToken(
       collectionCreatorAccount,
-      collection_name,
-      `${token_name} ${i}`,
+      collectionName,
+      `${tokenName} ${i}`,
       "Collection creator's any description",
       1,
       "https://nyancatcollection.com/images/Original.gif"
     );
+    tokensNames.push(`${tokenName} ${i}`);
   }
 
   console.log(
@@ -61,4 +63,8 @@ export const createNftCollection = async (collectionCreatorWallet: Wallet) => {
   );
 
   console.log("NFT Collection created successfully");
+  return {
+    collectionName: collectionName,
+    tokensNames: tokensNames,
+  };
 };

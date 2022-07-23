@@ -8,7 +8,9 @@ import {
   tokenData,
 } from "./collections_data/nyan_collection_data";
 
+/***************** PARAMS *****************/
 const collectionData = nyanCollectionData;
+/***************** PARAMS *****************/
 
 async function main() {
   // create new wallet (10 test tokens airdropped by default)

@@ -4,7 +4,7 @@ type PayloadParams = {
   type_arguments: string[];
 };
 
-export class SpacePowderBuyNow {
+export class SpacePowderBuyNowClient {
   spacePowderData = {
     ownerAddress:
       "e555ea6e4621b4cc8b526d5b4959e832db4a341e718551cf1d476bef497b6b8a",

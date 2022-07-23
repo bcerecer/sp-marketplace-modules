@@ -11,9 +11,7 @@
     "allowJs": true,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "types": ["node"],
     "typeRoots": ["../node_modules/@types"]
   },
-  "include": ["first_transaction.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

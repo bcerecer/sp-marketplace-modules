@@ -98,6 +98,35 @@ async function main() {
   ).value;
   console.log(`\n CollectionCreator firstToken balance: ${firstTokenBalance}`);
   assert(firstTokenBalance == 0);
+
+  /******************** BUYER LISTS FIRST TOKEN ********************/
+  console.log("\n=== CollectionCreator Buys First Token ====");
+  await martianFaucetClient.fundAccount(buyerAddress, maxFaucetAmount);
+
+  payload = buyNowClient.getBuyTokenPayload(
+    collectionCreatorAddress,
+    collectionCreatorAddress,
+    collectionName,
+    firstTokenListedName
+  );
+  await martianWalletClient.signGenericTransaction(
+    buyerAccount,
+    payload.func,
+    payload.args,
+    payload.type_arguments
+  );
+
+  firstTokenBalance = (
+    await martianTokenClient.getTokenBalanceForAccount(
+      buyerAddress,
+      firstTokenId
+    )
+  ).value;
+  console.log(`\n Buyer firstToken balance: ${firstTokenBalance}`);
+  assert(firstTokenBalance == 1);
+
+  /******************** CREATOR LISTS SECOND TOKEN ********************/
+  /******************** CREATOR DELISTS SECOND TOKEN ********************/
 }
 
 main();

@@ -3,3 +3,4 @@ build
 .aptos
 .idea/
 /typescript/node_modules/
+/typescript/env.ts

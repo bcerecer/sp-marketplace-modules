@@ -1,6 +1,6 @@
 import { martianWalletClient } from "../../wallets/martian";
 import { createNftCollection } from "../common/create_nft_collection";
-import { SpacePowderBuyNowClient } from "./buy_it_now";
+import { SpacePowderBuyNowClient } from "./buy_now";
 
 // TODO: These should be testing all suported wallets by making an internal SupportedWallets class where we test for each
 async function main() {

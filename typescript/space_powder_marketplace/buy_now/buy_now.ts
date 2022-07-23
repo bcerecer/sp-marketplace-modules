@@ -7,8 +7,8 @@ type PayloadParams = {
 export class SpacePowderBuyNowClient {
   spacePowderData = {
     ownerAddress:
-      "e555ea6e4621b4cc8b526d5b4959e832db4a341e718551cf1d476bef497b6b8a",
-    module: "buy_it_now",
+      "8d27c6260086d826da7defe88d7bf761d12dbf77935876b65b5a9624d7ea7c90",
+    module: "buy_now",
   };
 
   // list_token(seller: &signer, collection_owner_addres: address, collection_name: vector<u8>, token_name: vector<u8>, price: u64)

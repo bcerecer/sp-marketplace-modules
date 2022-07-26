@@ -9,7 +9,7 @@ const supabaseClient = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 
 /***************** PARAMS *****************/
 const collectionCreatorAddress =
-  "0x8f3cc294e5bc72b979ec5622f6dd0a7bafe70acb6bd03aa71a400f4cccc920d8";
+  "0xdd3a4fd9ca5fc403a5a2c1b18be625f69fe8b149083e59a2234429950fcdf477";
 const collectionName = "Aptos Nyan Cats";
 const collecitonPath = "aptos_nyan_cats";
 /***************** PARAMS *****************/

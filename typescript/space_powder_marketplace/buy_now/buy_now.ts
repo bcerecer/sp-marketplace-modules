@@ -7,7 +7,7 @@ type PayloadParams = {
 export class SpacePowderBuyNowClient {
   spacePowderData = {
     ownerAddress:
-      "0x78b4ee642c178e5e47f52a53d249bb80ff175ce254d81120a05abf74d37a23cb",
+      "0xcc90c986dc397685e3883153c0503e489a8647bc736e5e2f3caea0c63334a9c8",
     module: "buy_now",
   };
 

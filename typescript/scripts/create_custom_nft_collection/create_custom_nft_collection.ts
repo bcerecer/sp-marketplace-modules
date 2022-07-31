@@ -1,3 +1,4 @@
+import { WalletClient } from "@martiandao/aptos-web3-bip44.js";
 import { maxFaucetAmount } from "../../utils/constants";
 import {
   martianWalletClient,
@@ -18,11 +19,10 @@ async function main() {
   const collectionCreatorWallet = await martianWalletClient.createWallet();
   const collectionCreatorAddress = collectionCreatorWallet.accounts[0].address;
   const signingKey = collectionCreatorWallet.code;
-  const collectionCreatorAccount =
-    await martianWalletClient.getAccountFromMetaData(
-      signingKey,
-      collectionCreatorWallet.accounts[0]
-    );
+  const collectionCreatorAccount = await WalletClient.getAccountFromMetaData(
+    signingKey,
+    collectionCreatorWallet.accounts[0]
+  );
 
   console.log("\n=== Addresses ===");
   console.log(

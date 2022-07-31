@@ -37,6 +37,10 @@ async function main() {
     collectionName
   );
 
+  if (collection.code === 404) {
+    throw new Error("Collection doesnt exist");
+  }
+
   // Get tokens
   const createTokenEvents = await getCreateTokenEvents(
     collectionCreatorAddress,

@@ -1,6 +1,6 @@
 module space_powder_marketplace::buy_now {
     use aptos_framework::coin;
-    use aptos_framework::test_coin::TestCoin;
+    use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::token::{Self, Token, TokenId};
     use aptos_framework::table::{Self, Table};
     use std::event::{Self, EventHandle};
@@ -81,8 +81,8 @@ module space_powder_marketplace::buy_now {
         let listed_items = &mut listedItemsData.listed_items;
         let listed_item = table::borrow_mut(listed_items, token_id);
 
-        assert!(coin::balance<TestCoin>(buyer_addr) >= listed_item.price, E_INSUFFICIENT_FUNDS);
-        coin::transfer<TestCoin>(buyer, seller_addr, listed_item.price);
+        assert!(coin::balance<AptosCoin>(buyer_addr) >= listed_item.price, E_INSUFFICIENT_FUNDS);
+        coin::transfer<AptosCoin>(buyer, seller_addr, listed_item.price);
 
         // This is a copy of locked_token
         let locked_token: &mut Option<Token> = &mut listed_item.locked_token;
@@ -188,10 +188,10 @@ module space_powder_marketplace::buy_now {
         let collection_name: vector<u8> = b"Any collection name";
         let token_name: vector<u8> = b"Any token name";
         before_each_setup(&collection_creator, collection_name, token_name, &seller);
-        managed_coin::initialize<TestCoin>(&faucet, b"TestCoin", b"TEST", 6, false);
-        managed_coin::register<TestCoin>(&faucet);
-        managed_coin::register<TestCoin>(&seller);
-        managed_coin::register<TestCoin>(&buyer);
+        managed_coin::initialize<AptosCoin>(&faucet, b"AptosCoin", b"TEST", 6, false);
+        managed_coin::register<AptosCoin>(&faucet);
+        managed_coin::register<AptosCoin>(&seller);
+        managed_coin::register<AptosCoin>(&buyer);
         // List collection for sale
         let seller_addr = signer::address_of(&seller);
         let collection_creator_addr = signer::address_of(&collection_creator);
@@ -209,20 +209,20 @@ module space_powder_marketplace::buy_now {
         // Create and fund faucet        
         let coin_mint_amount = 1000;
         let faucet_addr = signer::address_of(&faucet);
-        managed_coin::mint<TestCoin>(&faucet, faucet_addr, coin_mint_amount);
+        managed_coin::mint<AptosCoin>(&faucet, faucet_addr, coin_mint_amount);
         // Fund buyer
         let buyer_addr = signer::address_of(&buyer);
-        coin::transfer<TestCoin>(&faucet, buyer_addr, token_price);
+        coin::transfer<AptosCoin>(&faucet, buyer_addr, token_price);
             // Verify buyer insuffice_funds amount of coins
-            assert!(coin::balance<TestCoin>(buyer_addr) == token_price, E_INVALID_BALANCE);
+            assert!(coin::balance<AptosCoin>(buyer_addr) == token_price, E_INVALID_BALANCE);
         
         // Buy token(NFT)
         buy_token(&buyer, seller_addr, collection_creator_addr, collection_name, token_name);
             // Verify buyer owns token(NFT) and seller has the coins
             assert!(token::balance_of(seller_addr, token_id) == 0, E_INCORRECT_TOKEN_OWNER);
             assert!(token::balance_of(buyer_addr, token_id) == 1, E_INCORRECT_TOKEN_OWNER);
-            assert!(coin::balance<TestCoin>(seller_addr) == token_price, E_INVALID_BALANCE);
-            assert!(coin::balance<TestCoin>(buyer_addr) == 0, E_INVALID_BALANCE);
+            assert!(coin::balance<AptosCoin>(seller_addr) == token_price, E_INVALID_BALANCE);
+            assert!(coin::balance<AptosCoin>(buyer_addr) == 0, E_INVALID_BALANCE);
     }
     #[expected_failure(abort_code = 1)]
     #[test(faucet = @0x1, seller = @0x2, buyer = @0x3, collection_creator = @0x4)]
@@ -231,10 +231,10 @@ module space_powder_marketplace::buy_now {
         let collection_name: vector<u8> = b"Any collection name";
         let token_name: vector<u8> = b"Any token name";
         before_each_setup(&collection_creator, collection_name, token_name, &seller);
-        managed_coin::initialize<TestCoin>(&faucet, b"TestCoin", b"TEST", 6, false);
-        managed_coin::register<TestCoin>(&faucet);
-        managed_coin::register<TestCoin>(&seller);
-        managed_coin::register<TestCoin>(&buyer);
+        managed_coin::initialize<AptosCoin>(&faucet, b"AptosCoin", b"TEST", 6, false);
+        managed_coin::register<AptosCoin>(&faucet);
+        managed_coin::register<AptosCoin>(&seller);
+        managed_coin::register<AptosCoin>(&buyer);
         // List collection for sale
         let seller_addr = signer::address_of(&seller);
         let collection_creator_addr = signer::address_of(&collection_creator);
@@ -252,26 +252,26 @@ module space_powder_marketplace::buy_now {
         // Create and fund faucet        
         let coin_mint_amount = 1000;
         let faucet_addr = signer::address_of(&faucet);
-        managed_coin::mint<TestCoin>(&faucet, faucet_addr, coin_mint_amount);
+        managed_coin::mint<AptosCoin>(&faucet, faucet_addr, coin_mint_amount);
         // Fund buyer
         let buyer_addr = signer::address_of(&buyer);
         let deficit_from_token_price = 10;
         let insufficient_funds = token_price - deficit_from_token_price;
-        coin::transfer<TestCoin>(&faucet, buyer_addr, insufficient_funds);
+        coin::transfer<AptosCoin>(&faucet, buyer_addr, insufficient_funds);
         {
             // Verify listed_items(escrow) entry still has token(NFT)
             let listedItemsData = borrow_global_mut<ListedItemsData>(seller_addr);
             let listed_items = &mut listedItemsData.listed_items;
             assert!(table::length(listed_items) == 1, E_INCORRECT_TOKEN_OWNER);
             // Verify buyer insuffice_funds amount of coins
-            assert!(coin::balance<TestCoin>(buyer_addr) == insufficient_funds, E_INVALID_BALANCE);
+            assert!(coin::balance<AptosCoin>(buyer_addr) == insufficient_funds, E_INVALID_BALANCE);
         };
         
         buy_token(&buyer, seller_addr, collection_creator_addr, collection_name, token_name);
             // Verify buyer owns token(NFT) and seller has the coins
             assert!(token::balance_of(buyer_addr, token_id) == 0, E_INCORRECT_TOKEN_OWNER);
-            assert!(coin::balance<TestCoin>(seller_addr) == 0, E_INVALID_BALANCE);
-            assert!(coin::balance<TestCoin>(buyer_addr) == insufficient_funds, E_INVALID_BALANCE);
+            assert!(coin::balance<AptosCoin>(seller_addr) == 0, E_INVALID_BALANCE);
+            assert!(coin::balance<AptosCoin>(buyer_addr) == insufficient_funds, E_INVALID_BALANCE);
     }
     #[test(faucet = @0x1, seller = @0x2, buyer = @0x3, collection_creator = @0x4)]
     public fun WHEN_seller_delist_THEN_succeeds_delist(faucet: signer, seller: signer, buyer: signer, collection_creator: signer) acquires ListedItemsData {
@@ -279,10 +279,10 @@ module space_powder_marketplace::buy_now {
         let collection_name: vector<u8> = b"Any collection name";
         let token_name: vector<u8> = b"Any token name";
         before_each_setup(&collection_creator, collection_name, token_name, &seller);
-        managed_coin::initialize<TestCoin>(&faucet, b"TestCoin", b"TEST", 6, false);
-        managed_coin::register<TestCoin>(&faucet);
-        managed_coin::register<TestCoin>(&seller);
-        managed_coin::register<TestCoin>(&buyer);
+        managed_coin::initialize<AptosCoin>(&faucet, b"AptosCoin", b"TEST", 6, false);
+        managed_coin::register<AptosCoin>(&faucet);
+        managed_coin::register<AptosCoin>(&seller);
+        managed_coin::register<AptosCoin>(&buyer);
         // List collection for sale
         let seller_addr = signer::address_of(&seller);
         let collection_creator_addr = signer::address_of(&collection_creator);

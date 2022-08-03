@@ -1,7 +1,7 @@
 export const collectionData = {
   name: "Dalmatians",
-  description: "The first ever, born to burn NFT collection",
-  uri: "https://twitter.com/dalmacoin",
+  description: "The first Aptos meme coin. https://twitter.com/dalmacoin",
+  uri: "https://naznqrrugqomvwhrdpks.supabase.co/storage/v1/object/sign/dalmatians/",
 };
 const bucketuri =
   "https://naznqrrugqomvwhrdpks.supabase.co/storage/v1/object/sign/dalmatians/";

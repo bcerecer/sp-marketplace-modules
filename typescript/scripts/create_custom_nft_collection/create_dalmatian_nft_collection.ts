@@ -49,9 +49,9 @@ async function main() {
 
   console.log("Begin creating dalmatians :D");
   let index = 0;
-  for (let i = 0; i < 7101; i++) {
+  for (let i = 0; i < 50; i++) {
     // Transfer maxFaucetAmount for every 10 nfts to avoid going out of balance
-    if (index % 10 == 0) {
+    if (index % 4 == 0) {
       await martianFaucetClient.fundAccount(
         collectionCreatorAddress,
         maxFaucetAmount
@@ -68,7 +68,7 @@ async function main() {
     );
     index += 1;
   }
-  console.log("Finished creating nyans");
+  console.log("Finished creating dalmatians");
 
   console.log(
     `Collection creator: ${JSON.stringify(

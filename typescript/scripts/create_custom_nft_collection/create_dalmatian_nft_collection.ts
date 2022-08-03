@@ -4,13 +4,7 @@ import {
   martianWalletClient,
   martianFaucetClient,
 } from "../../wallets/martian";
-import {
-  collectionData,
-  tokenData,
-} from "./collections_data/crypto_punks_data";
-// ./collections_data/nyan_collection_data
-// ./collections_data/flappy_birds_data
-// ./collections_data/crypto_punks_data
+import { collectionData, tokenData } from "./collections_data/dalmatians_data";
 
 /***************** PARAMS *****************/
 
@@ -53,9 +47,9 @@ async function main() {
     collectionData.uri
   );
 
-  console.log("Begin creating nyans :D");
+  console.log("Begin creating dalmatians :D");
   let index = 0;
-  for (let token of tokenData) {
+  for (let i = 0; i < 7101; i++) {
     // Transfer maxFaucetAmount for every 10 nfts to avoid going out of balance
     if (index % 10 == 0) {
       await martianFaucetClient.fundAccount(
@@ -63,14 +57,14 @@ async function main() {
         maxFaucetAmount
       );
     }
-    console.log("creating token: ", token.name);
+    console.log("creating token: ", i);
     await martianWalletClient.createToken(
       collectionCreatorAccount,
       collectionData.name,
-      token.name,
-      token.name, // this is the description
+      `Dalmatian #${i}`,
+      "The first meme coin in Aptos", // this is the description
       1,
-      token.uri
+      "https://naznqrrugqomvwhrdpks.supabase.co/storage/v1/object/public/dalmatians/dalmatian_coin.png"
     );
     index += 1;
   }

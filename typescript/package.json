@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "buy_now_test": "node --loader ts-node/esm space_powder_marketplace/buy_now/buy_now.test.ts",
+    "create_dalmatian_nft_collection": "node --loader ts-node/esm scripts/create_custom_nft_collection/create_dalmatian_nft_collection.ts",
     "create_custom_nft_collection": "node --loader ts-node/esm scripts/create_custom_nft_collection/create_custom_nft_collection.ts",
     "publish_nfts_supa_db": "node --loader ts-node/esm scripts/publish_nfts_supa_db.ts",
     "get_token_balance": "node --loader ts-node/esm scripts/get_token_balance.ts",
